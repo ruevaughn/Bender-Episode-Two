@@ -1,51 +1,91 @@
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
+module FuturamaLand
+  class Bender
+    attr_reader :money_collected
 
-class Bender
-    attr_reader :money_found
-      
     def initialize
-      @money_collected = []
+      @money_found = []
       @rooms_visited = []
       @rooms_left_to_visit = []
+      @next_room = false
+      @current_room = nil
+      @current_room_number = 0
+      @current_room_level = 0
     end
-      
-    def detect_new_bank_notes(room)
-       @rooms_left_to_visit << room 
+
+    def detect_new_room(room)
+      @rooms_left_to_visit << room
     end
-      
+
     def navigate_building
       @rooms_left_to_visit.each do |room|
-       rooms_visited << room 
+        visit_room(room)
       end
     end
+
+    def visit_room(room)
+      @rooms_visited << room
+
+      @rooms_left_to_visit - [room]
+      # if @current_room.udd
+    end
+
+    def money_found
+      @money_colllected.inject(0){|money_found, room| running_total + room.money }
+    end
   end
-  
+
   class Room
     attr_reader :number
     attr_reader :money
     attr_reader :first_door
     attr_reader :second_door
-      
+
     def initialize(attrs)
-      attrs.split!(' ')
+      attrs.split(' ')
       @number      = attrs[0]
       @money       = attrs[1]
       @first_door  = attrs[2]
       @second_door = attrs[2]
     end
   end
-  
-  
-  n = gets.to_i
-  bender = Bender.new
-  n.times do
-      room_attrs = gets.chomp
-      room = Room.new(room_attrs)
-      bender.detect_new_bank_notes(room)
+
+  class Building
+    attr_reader :total_rooms_count
+    attr_reader :rooms
+
+    def initialize
+      @rooms = []
+    end
+
+    def add_room_count(count)
+      @total_rooms_count = count
+    end
+
+    def add_room(room)
+      @rooms << room
+    end
   end
-  
-  # Write an action using puts
-  # To debug: STDERR.puts "Debug messages..."
-  
-  puts "answer"
+end
+
+
+n = gets.to_i
+bender = FuturamaLand::Bender.new
+building = FuturamaLand::Building.new
+count = 0
+n.times do
+  count += 1
+  room_attrs = gets.chomp
+  if count == 1
+    STDERR.puts room_attrs
+    building.add_room_count(room_attrs)
+  else
+    STDERR.puts room_attrs
+    room = FuturamaLand::Room.new(room_attrs)
+    building.add_room(room)
+  end
+end
+
+bender.navigate_building
+bender.money_collected
+
+puts "answer"
